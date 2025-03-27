@@ -1,0 +1,16 @@
+{
+  "scripts": {
+    "start": "npx tsc && node dist/app.js"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "express": "^4.21.2",
+    "mysql2": "^3.14.0"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/express": "^5.0.1",
+    "@types/mysql": "^2.15.27",
+    "typescript": "^5.8.2"
+  }
+}
