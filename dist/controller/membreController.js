@@ -10,7 +10,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getMembers = getMembers;
-exports.getMemberWithId = getMemberWithId;
 exports.newMember = newMember;
 exports.updateMemberEmail = updateMemberEmail;
 exports.updatePassword = updatePassword;
@@ -18,41 +17,46 @@ const app_1 = require("../app");
 const Membre_1 = require("../classes/Membre");
 function getMembers(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const membres = yield app_1.MembreRepo.getAll();
+        const resultParams = req.body.resultParams;
+        const filterParams = req.body.filterParams;
+        const membres = yield app_1.MembreRepo.getBy(resultParams, filterParams);
         res.status(200);
         res.send(JSON.stringify(membres));
     });
 }
-function getMemberWithId(req, res) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const id = Number(req.params.id);
-        const membre = yield app_1.MembreRepo.getById(id);
-        res.status(200);
-        res.send(JSON.stringify(membre));
-    });
-}
 function newMember(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
+        const { id, email, firstname, lastname, password, is_admin, image_url } = req.body;
         const new_member = {
-            id: 3,
-            email: "Test@gmail.com",
-            firstname: "ted",
-            image_url: "/",
-            is_admin: null,
-            lastname: "dre",
-            password: "test",
+            id,
+            email,
+            firstname,
+            lastname,
+            password,
+            is_admin,
+            image_url
         };
-        const membreExist = yield Membre_1.Membre.memberAlreadyExist(app_1.MembreRepo, [
+        const emailExist = yield Membre_1.Membre.memberAlreadyExist(app_1.MembreRepo, [
             {
                 name: "email",
                 value: new_member.email,
             },
         ]);
-        if (membreExist) {
+        const personExist = yield Membre_1.Membre.memberAlreadyExist(app_1.MembreRepo, [
+            {
+                name: "firstname",
+                value: new_member.firstname,
+            },
+            {
+                name: "lastname",
+                value: new_member.lastname,
+            },
+        ]);
+        if (emailExist || personExist) {
             res.status(400);
-            res.send(JSON.stringify({ err: "user already exist" }));
+            res.send(JSON.stringify({ err: "Un membre avec les memes informations exite deja" }));
         }
-        const membre = app_1.MembreRepo.add(new_member).then((membre) => membre);
+        const membre = yield app_1.MembreRepo.add(new_member);
         res.status(200);
         res.send(JSON.stringify(membre));
     });
@@ -61,9 +65,7 @@ function updateMemberEmail(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const id = req.body.id;
         const newEmail = req.body.email;
-        const membreExist = yield app_1.MembreRepo.getBy([
-            { name: "email", value: newEmail },
-        ]);
+        const membreExist = yield app_1.MembreRepo.getBy([], [{ name: "email", value: newEmail }]);
         if (membreExist.length > 0) {
             res.status(400);
             res.send(JSON.stringify({ err: "Votre nouvelle adresse email existe deja" }));
@@ -84,8 +86,8 @@ function updateMemberEmail(req, res) {
 function updatePassword(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const id = req.body.id;
-        const db_password = yield app_1.MembreRepo.getPassword(id);
-        const passwordValid = yield Membre_1.Membre.isPasswordValid(req.body.old_password, db_password);
+        const db_password = yield app_1.MembreRepo.getBy(["password"], [{ name: "Id_Membre", value: id }]);
+        const passwordValid = yield Membre_1.Membre.isPasswordValid(req.body.old_password, db_password[0].getPassword());
         console.log(passwordValid);
         if (!passwordValid) {
             res.status(400);

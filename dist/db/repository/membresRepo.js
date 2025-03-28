@@ -18,60 +18,49 @@ const init_1 = require("../init");
 const Membre_1 = require("../../classes/Membre");
 const parseWhereConditions_1 = require("../../utils/parseWhereConditions");
 class MembreRepository {
-    getAll() {
+    getBy(resultParams, params) {
         return new Promise((resolve, reject) => {
-            init_1.connection.execute("SELECT * FROM Membre", (err, res) => {
-                if (err)
-                    reject(err);
-                const membres = [];
-                if (Array.isArray(res)) {
-                    res.forEach((el) => {
-                        const new_membre = new Membre_1.Membre(el.Id_Membre, el.firstname, el.lastname, el.is_admin, el.email, el.image_url);
-                        membres.push(new_membre);
-                    });
-                }
-                else {
-                    reject(new Error("La requete n'est pas sous format de tableau."));
-                }
-                resolve(membres);
-            });
-        });
-    }
-    getById(id) {
-        return new Promise((resolve, reject) => {
-            init_1.connection.execute(`SELECT * FROM Membre WHERE Id_Membre = ${id}`, (err, res) => {
-                if (err)
-                    reject(err);
-                if (res === undefined) {
-                    throw new Error("User not found");
-                }
-                const response = res[0];
-                const new_membre = new Membre_1.Membre(response.Id_Membre, response.firstname, response.lastname, response.is_admin, response.email, response.image_url);
-                resolve(new_membre);
-            });
-        });
-    }
-    getBy(params) {
-        return new Promise((resolve, reject) => {
-            let query = `
-        Select * from Membre Where `;
-            params.forEach((el, i) => {
-                let result;
-                if (i === 0) {
-                    result = (0, parseWhereConditions_1.parseWhereConditions)(el.name, el.value);
-                }
-                else {
-                    result = ` AND ${(0, parseWhereConditions_1.parseWhereConditions)(el.name, el.value)}`;
-                }
-                query += result;
-            });
+            // Start Query
+            let startQuery = "SELECT ";
+            if (resultParams.length === 0) {
+                startQuery += "*";
+            }
+            else {
+                resultParams.forEach((filter, i) => {
+                    if (i === 0) {
+                        startQuery += `${filter}`;
+                    }
+                    else {
+                        startQuery += `, ${filter}`;
+                    }
+                });
+            }
+            // End Query
+            let endQuery = " FROM Membre Where ";
+            if (params.length === 0) {
+                endQuery += "1";
+            }
+            else {
+                params.forEach((el, i) => {
+                    let result;
+                    if (i === 0) {
+                        result = (0, parseWhereConditions_1.parseWhereConditions)(el.name, el.value);
+                    }
+                    else {
+                        result = ` AND ${(0, parseWhereConditions_1.parseWhereConditions)(el.name, el.value)}`;
+                    }
+                    endQuery += result;
+                });
+            }
+            const query = startQuery + endQuery;
             init_1.connection.execute(query, (err, res) => {
                 if (err)
                     reject(err);
+                console.log(res);
                 const membres = [];
                 if (Array.isArray(res)) {
                     res.forEach((el) => {
-                        const new_membre = new Membre_1.Membre(el.Id_Membre, el.firstname, el.lastname, el.is_admin, el.email, el.image_url);
+                        const new_membre = new Membre_1.Membre(el.Id_Membre, el.firstname, el.lastname, el.is_admin, el.email, el.image_url, el.password);
                         membres.push(new_membre);
                     });
                 }
@@ -101,7 +90,7 @@ class MembreRepository {
                     hashedPassword,
                     membre.image_url,
                 ]);
-                return new Membre_1.Membre(membre.id, membre.firstname, membre.lastname, membre.is_admin, membre.email, membre.image_url);
+                return new Membre_1.Membre(membre.id, membre.firstname, membre.lastname, membre.is_admin, membre.email, membre.image_url, "");
             }
             catch (err) {
                 throw new Error(`Erreur lors de l'ajout du membre : ${err}`);
@@ -138,21 +127,6 @@ WHERE Id_Membre = ${id};
                     isValid = false;
             });
             return isValid;
-        });
-    }
-    getPassword(id) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return new Promise((resolve, reject) => {
-                init_1.connection.execute(`SELECT password FROM Membre WHERE Id_Membre = ${id}`, (err, res) => {
-                    if (err)
-                        reject(err);
-                    if (res === undefined) {
-                        throw new Error("User not found");
-                    }
-                    const response = res[0];
-                    resolve(response.password);
-                });
-            });
         });
     }
 }

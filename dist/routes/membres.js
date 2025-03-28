@@ -38,7 +38,6 @@ const express_1 = require("express");
 const MembreController = __importStar(require("../controller/membreController"));
 exports.membreRoute = (0, express_1.Router)();
 exports.membreRoute.get("/", MembreController.getMembers);
-exports.membreRoute.get("/:id", MembreController.getMemberWithId);
 exports.membreRoute.post("/", MembreController.newMember);
 exports.membreRoute.patch("/update/email", MembreController.updateMemberEmail);
 exports.membreRoute.patch("/update/password", MembreController.updatePassword);

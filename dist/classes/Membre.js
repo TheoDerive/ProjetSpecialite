@@ -15,13 +15,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Membre = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
 class Membre {
-    constructor(id, firstname, lastname, is_admin, email, image_url) {
+    constructor(id, firstname, lastname, is_admin, email, image_url, password) {
         this.id = id,
             this.firstname = firstname,
             this.lastname = lastname,
             this.is_admin = is_admin,
             this.email = email,
             this.image_url = image_url;
+        this.password = password;
     }
     membreIsAdmin() {
         if (this.is_admin) {
@@ -31,7 +32,7 @@ class Membre {
     }
     static memberAlreadyExist(MembreRepo, params) {
         return __awaiter(this, void 0, void 0, function* () {
-            const membre = yield MembreRepo.getBy(params);
+            const membre = yield MembreRepo.getBy(["Id_Membre"], params);
             if (membre.length > 0) {
                 return true;
             }
@@ -42,6 +43,9 @@ class Membre {
         return __awaiter(this, void 0, void 0, function* () {
             return yield bcrypt_1.default.compare(password, db_password);
         });
+    }
+    getPassword() {
+        return this.password;
     }
 }
 exports.Membre = Membre;

@@ -9,86 +9,51 @@ import { connection } from "../init";
 import { Membre } from "../../classes/Membre";
 import { CreateMembreType } from "../../types/MembreTypes";
 import { parseWhereConditions } from "../../utils/parseWhereConditions";
+import { filterParamsType, resultParamsType } from "../../types/usefullTypes";
 
 export class MembreRepository implements MembreRepoInterface {
-  getAll(): Promise<Membre[]> {
+  getBy(resultParams: resultParamsType, params:  filterParamsType[]): Promise<Membre[]> {
     return new Promise((resolve, reject) => {
-      connection.execute(
-        "SELECT * FROM Membre",
-        (err, res: MembreGetRequest[]) => {
-          if (err) reject(err);
 
-          const membres: Membre[] = [];
+      // Start Query
+      let startQuery = "SELECT "
 
-          if (Array.isArray(res)) {
-            res.forEach((el: MembreGetRequest) => {
-              const new_membre = new Membre(
-                el.Id_Membre,
-                el.firstname,
-                el.lastname,
-                el.is_admin,
-                el.email,
-                el.image_url,
-              );
+      if(resultParams.length === 0){
+        startQuery += "*"
+      }else {
+        resultParams.forEach((filter, i) => {
+          if(i === 0){
+            startQuery += `${filter}`
+          }else {
+            startQuery += `, ${filter}`
+          }
+        })   
+      }
 
-              membres.push(new_membre);
-            });
+      // End Query
+      let endQuery = " FROM Membre Where "
+      if (params.length === 0) {
+        endQuery += "1";
+      } else {
+        params.forEach((el, i) => {
+          let result;
+
+          if (i === 0) {
+            result = parseWhereConditions(el.name, el.value);
           } else {
-            reject(new Error("La requete n'est pas sous format de tableau."));
+            result = ` AND ${parseWhereConditions(el.name, el.value)}`;
           }
 
-          resolve(membres);
-        },
-      );
-    });
-  }
+          endQuery += result;
+        });
+      }
 
-  getById(id: number): Promise<Membre> {
-    return new Promise((resolve, reject) => {
-      connection.execute(
-        `SELECT * FROM Membre WHERE Id_Membre = ${id}`,
-        (err: MysqlError | Error | null, res: MembreGetRequest) => {
-          if (err) reject(err);
-
-          if(res === undefined){ 
-            throw new Error("User not found")
-          }
-          const response = res[0];
-
-          const new_membre = new Membre(
-            response.Id_Membre,
-            response.firstname,
-            response.lastname,
-            response.is_admin,
-            response.email,
-            response.image_url,
-          );
-
-          resolve(new_membre);
-        },
-      );
-    });
-  }
-
-  getBy(params: { name: string; value: any }[]): Promise<Membre[]> {
-    return new Promise((resolve, reject) => {
-      let query = `
-        Select * from Membre Where `;
-
-      params.forEach((el, i) => {
-        let result;
-
-        if (i === 0) {
-          result = parseWhereConditions(el.name, el.value);
-        } else {
-          result = ` AND ${parseWhereConditions(el.name, el.value)}`;
-        }
-
-        query += result;
-      });
+      const query = startQuery + endQuery
 
       connection.execute(query, (err, res: MembreGetRequest[]) => {
         if (err) reject(err);
+
+        console.log(res)
 
         const membres: Membre[] = [];
 
@@ -101,6 +66,7 @@ export class MembreRepository implements MembreRepoInterface {
               el.is_admin,
               el.email,
               el.image_url,
+              el.password
             );
 
             membres.push(new_membre);
@@ -142,6 +108,7 @@ export class MembreRepository implements MembreRepoInterface {
         membre.is_admin,
         membre.email,
         membre.image_url,
+        ""
       );
     } catch (err) {
       throw new Error(`Erreur lors de l'ajout du membre : ${err}`);
@@ -181,23 +148,5 @@ WHERE Id_Membre = ${id};
     })
 
     return isValid
-  }
-
-  async getPassword(id: number): Promise<string> {
-    return new Promise((resolve, reject) => {
-
-      connection.execute(
-        `SELECT password FROM Membre WHERE Id_Membre = ${id}`,
-        (err: MysqlError | Error | null, res: {password: string}[]) => {
-          if (err) reject(err);
-
-          if(res === undefined){ 
-            throw new Error("User not found")
-          }
-          const response = res[0];
-          resolve(response.password);
-        },
-      );
-    });
   }
 }

@@ -9,8 +9,9 @@ export class Membre {
   private is_admin: number | null
   private email: string
   private image_url: string
+  private password: string
 
-  constructor(id: number, firstname: string, lastname: string, is_admin: number | null, email: string, image_url: string){
+  constructor(id: number, firstname: string, lastname: string, is_admin: number | null, email: string, image_url: string, password: string){
     this.id = id,
 
     this.firstname = firstname,
@@ -18,6 +19,8 @@ export class Membre {
     this.is_admin = is_admin,
     this.email = email,
     this.image_url = image_url
+
+    this.password = password
   }
   public membreIsAdmin(){
     if(this.is_admin){
@@ -28,7 +31,7 @@ export class Membre {
   }
 
   static async memberAlreadyExist(MembreRepo: MembreRepository, params: { name: string, value: any}[]): Promise<boolean> {
-    const membre = await MembreRepo.getBy(params)
+    const membre = await MembreRepo.getBy(["Id_Membre"], params)
 
 
     if(membre.length > 0){
@@ -40,6 +43,9 @@ export class Membre {
 
   static async isPasswordValid(password: string, db_password: string){
     return await bcrypt.compare(password, db_password)
+  }
 
+  getPassword(){
+    return this.password
   }
 }

@@ -13,7 +13,9 @@ exports.getRoles = getRoles;
 const app_1 = require("../app");
 function getRoles(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const response = yield app_1.RoleRepo.getAll();
+        const resultParams = req.body.resultParams;
+        const filterParams = req.body.filterParams;
+        const response = yield app_1.RoleRepo.getBy(resultParams, filterParams);
         res.status(200);
         res.send(JSON.stringify(response));
     });

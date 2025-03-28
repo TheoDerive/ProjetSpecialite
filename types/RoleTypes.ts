@@ -1,4 +1,4 @@
 export type RoleType = {
-  id: number,
+  Id_roles: number,
   name: string
 }

@@ -1,9 +1,8 @@
 import { Role } from "../classes/Role";
-import { RoleType } from "../types/RoleTypes";
+import { filterParamsType, resultParamsType } from "../types/usefullTypes";
 
 export interface RoleRepoInterface {
-  getAll(): Promise<Role[]>
-  getById(id: number): Promise<RoleType>
+  getBy(resultParams: resultParamsType ,params: filterParamsType[]): Promise<Role[]>
   //
   //add(): Promise<RoleType>
   //

@@ -3,10 +3,20 @@ import { MembreRepository } from "./db/repository/membresRepo";
 import { membreRoute } from "./routes/membres";
 import { RoleRepository } from "./db/repository/roleRepository";
 import { roleRoute } from "./routes/roles";
+import { categoryRepository } from "./db/repository/categoriesRepository";
+import { categoryRoute } from "./routes/category";
+import { EventTypeRepository } from "./db/repository/eventTypeRepository";
+import { typeEventRouter } from "./routes/typeEvent";
+import { EvenementRepository } from "./db/repository/evenementRepository";
+import { evenementRoute } from "./routes/evenements";
 
 export const app = express();
+
 export const MembreRepo = new MembreRepository();
+export const EvenementRepo = new EvenementRepository();
+export const CategoryRepo = new categoryRepository();
 export const RoleRepo = new RoleRepository();
+export const EventTypeRepo = new EventTypeRepository();
 
 const PORT = 3000;
 
@@ -22,3 +32,6 @@ app.use(express.json())
 
 app.use("/api/membres", membreRoute)
 app.use("/api/roles", roleRoute)
+app.use("/api/category", categoryRoute)
+app.use("/api/typesevents", typeEventRouter)
+app.use("/api/evenements", evenementRoute)

@@ -1,11 +1,10 @@
 import { RowDataPacket } from "mysql2";
 import { Membre } from "../classes/Membre";
 import { CreateMembreType } from "../types/MembreTypes";
+import { filterParamsType, resultParamsType } from "../types/usefullTypes";
 
 export interface MembreRepoInterface {
-  getAll(): Promise<Membre[]>
-  getById(id: number): Promise<Membre>
-  getBy(params: {name:string, value:any}[]): void
+  getBy(resultParams: resultParamsType ,params: filterParamsType[]): Promise<Membre[]>
   
   add(membre: CreateMembreType): Promise<Membre>
 
