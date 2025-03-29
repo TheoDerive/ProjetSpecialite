@@ -102,7 +102,6 @@ export async function login(req: Request, res: Response) {
 
 export async function logout(req: Request, res: Response) {
   const id = req.body.id;
-  console.log(id)
 
   const membreExist = await MembreRepo.getBy(
     [],
