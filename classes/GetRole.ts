@@ -12,7 +12,7 @@ export class GetRole {
 
   public evenement: Evenement | null
   public membre: Membre | null
-  public roleName: string | null
+  public roleName: Role | null
 
   constructor(id: number, Id_Membre: number, Id_roles: number, Id_Evenement: number, is_valid: boolean | null, date: string ){
     this.id = id
@@ -25,5 +25,9 @@ export class GetRole {
     this.roleName = null
     this.evenement = null
     this.membre = null
+  }
+
+  getIsValid(){
+    return this.is_valid
   }
 }

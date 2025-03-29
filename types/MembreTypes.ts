@@ -6,4 +6,5 @@ export type CreateMembreType = {
   is_admin: number | null
   email: string
   image_url: string
+  token: string
 }

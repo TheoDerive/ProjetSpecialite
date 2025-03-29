@@ -64,7 +64,8 @@ export class MembreRepository implements MembreRepoInterface {
               el.is_admin,
               el.email,
               el.image_url,
-              el.password
+              el.password,
+              el.token
             );
 
             membres.push(new_membre);
@@ -85,8 +86,8 @@ export class MembreRepository implements MembreRepoInterface {
 
       const query = `
       INSERT INTO Membre 
-      (Id_Membre, is_admin, firstname, lastname, email, password, image_url) 
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      (Id_Membre, is_admin, firstname, lastname, email, password, image_url, token) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
       connection.execute(query, [
@@ -97,6 +98,7 @@ export class MembreRepository implements MembreRepoInterface {
         membre.email.toLowerCase(),
         hashedPassword,
         membre.image_url,
+        membre.token
       ]);
 
       return new Membre(
@@ -106,7 +108,8 @@ export class MembreRepository implements MembreRepoInterface {
         membre.is_admin,
         membre.email,
         membre.image_url,
-        ""
+        "",
+        membre.token
       );
     } catch (err) {
       throw new Error(`Erreur lors de l'ajout du membre : ${err}`);
@@ -146,5 +149,45 @@ WHERE Id_Membre = ${id};
     })
 
     return isValid
+  }
+
+
+  async logout(id: number){
+      let isValid = true
+
+      const query = `
+      UPDATE Membre
+SET token = null
+WHERE Id_Membre = ${id};
+    `;
+
+    connection.execute(query, (err, res) => {
+      if(err) isValid = false
+    })
+
+    return isValid
+  }
+
+  async delete(id: number): Promise<boolean> {
+    let valid = true  
+
+    const query = `DELETE from Membre WHERE Id_Membre=${id}`
+
+    try {
+      await new Promise<void>((resolve, reject) => {
+        connection.execute(query, (err: MysqlError | Error | null, res) => {
+          if(err){
+            valid = false
+            reject(err)
+          }
+
+          resolve()
+        }) 
+      }) 
+    } catch (error) {
+      console.log(error) 
+    }
+
+    return valid
   }
 }

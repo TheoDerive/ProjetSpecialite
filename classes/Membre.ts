@@ -1,5 +1,6 @@
 import { MembreRepository } from "../db/repository/membresRepo"
 import bcrypt from "bcrypt"
+import jwt from "jsonwebtoken"
 
 export class Membre {
   public id: number
@@ -10,8 +11,9 @@ export class Membre {
   private email: string
   private image_url: string
   private password: string
+  private token: string
 
-  constructor(id: number, firstname: string, lastname: string, is_admin: number | null, email: string, image_url: string, password: string){
+  constructor(id: number, firstname: string, lastname: string, is_admin: number | null, email: string, image_url: string, password: string, token: string){
     this.id = id,
 
     this.firstname = firstname,
@@ -21,13 +23,19 @@ export class Membre {
     this.image_url = image_url
 
     this.password = password
+    this.token = token
   }
+
   public membreIsAdmin(){
     if(this.is_admin){
       return true
     }
 
     return false
+  }
+
+  getPassword(){
+    return this.password
   }
 
   static async memberAlreadyExist(MembreRepo: MembreRepository, params: { name: string, value: any}[]): Promise<boolean> {
@@ -45,7 +53,8 @@ export class Membre {
     return await bcrypt.compare(password, db_password)
   }
 
-  getPassword(){
-    return this.password
+  static createToken(id: number): string{
+    const authToken = jwt.sign({id: id}, "foo")
+    return authToken
   }
 }

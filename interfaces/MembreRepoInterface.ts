@@ -11,6 +11,7 @@ export interface MembreRepoInterface {
   updateEmail(email: string, id: number): Promise<boolean>
   updatePassword(password: string, id: number): Promise<boolean>
 
+  delete(id: number): Promise<boolean>
 }
 
 export interface MembreGetRequest extends RowDataPacket {
@@ -21,6 +22,7 @@ export interface MembreGetRequest extends RowDataPacket {
   email: string
   image_url: string
   password: string
+  token: string
 }
 
 

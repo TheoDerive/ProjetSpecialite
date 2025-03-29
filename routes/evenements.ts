@@ -6,4 +6,5 @@ export const evenementRoute = Router()
 evenementRoute.get("/", EvenementController.get)
 evenementRoute.post("/", EvenementController.add)
 evenementRoute.patch("/:id", EvenementController.update)
+evenementRoute.delete("/:id", EvenementController.erease)
 

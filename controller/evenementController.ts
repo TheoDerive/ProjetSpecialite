@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { EvenementRepo } from "../app";
+import { EvenementRepo, GetRoleRepo } from "../app";
 import { EvenementType, UpdateEvenementType } from "../types/EvenementType";
 import { formatDateForSQL } from "../utils/formatDate";
 
@@ -78,4 +78,49 @@ export async function update(req: Request, res: Response) {
 
   res.status(200)
   res.send(JSON.stringify({message: "Evenement modifier avec succes"}))
+}
+
+export async function erease(req: Request, res: Response) {
+  const id = req.params.id;
+
+  const evenement_valid = await EvenementRepo.getBy(
+    ["Id_Evenement"],
+    [{ name: "Id_Evenement", value: Number(id) }],
+  );
+
+  if (evenement_valid.length === 0) {
+    res.status(500);
+    res.send(
+      JSON.stringify({
+        err: "L'evenement que vous essayer de supprimer n'existe pas",
+      }),
+    );
+  } else {
+    const deleteGetRolesFromEvenement = await GetRoleRepo.deleteFromEvenement(
+      Number(id),
+    );
+
+    if (!deleteGetRolesFromEvenement) {
+    res.status(500);
+    res.send(
+      JSON.stringify({
+        err: "Nous n'avons pas reussi a supprimer les roles auquels l'evenement est assigner, veuillez reessayer",
+      }),
+    );
+    } else {
+      const deleteValid = await EvenementRepo.delete(Number(id));
+
+      if (!deleteValid) {
+        res.status(500);
+        res.send(
+          JSON.stringify({
+            err: "Nous n'avons pas pu supprimer l'evenement, veuillez reessayer",
+          }),
+        );
+      } else {
+        res.status(200);
+        res.send(JSON.stringify({ message: "L'evenement a bien ete supprimer" }));
+      }
+    }
+  }
 }

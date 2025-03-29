@@ -156,4 +156,28 @@ export class EvenementRepository implements EvenementRepoInterface {
 
     return valid;
   }
+
+
+  async delete(id: number): Promise<boolean> {
+    let valid = true  
+
+    const query = `DELETE from Evenement WHERE Id_Evenement=${id}`
+
+    try {
+      await new Promise<void>((resolve, reject) => {
+        connection.execute(query, (err: MysqlError | Error | null, res) => {
+          if(err){
+            valid = false
+            reject(err)
+          }
+
+          resolve()
+        }) 
+      }) 
+    } catch (error) {
+      console.log(error) 
+    }
+
+    return valid
+  }
 }

@@ -1,6 +1,6 @@
 import { MysqlError } from "mysql";
 import { GetRoleRepoInterface } from "../../interfaces/GetRoleRepoInterface";
-import { getRoleType } from "../../types/getRolesType";
+import { getRoleType, UpdateGetRoleType } from "../../types/getRolesType";
 import { filterParamsType, resultParamsType } from "../../types/usefullTypes";
 import { parseWhereConditions } from "../../utils/parseWhereConditions";
 import { connection } from "../init";
@@ -49,6 +49,7 @@ export class GetRoleRepository implements GetRoleRepoInterface {
 
     const query = startQuery + endQuery;
 
+
     const get_roles: GetRole[] = [];
 
     try {
@@ -88,7 +89,7 @@ export class GetRoleRepository implements GetRoleRepoInterface {
                   );
 
                   new_get_role.evenement = evenement[0];
-                  new_get_role.roleName = role[0].getName();
+                  new_get_role.roleName = role[0];
                   new_get_role.membre = membre[0];
                 }
 
@@ -135,5 +136,122 @@ export class GetRoleRepository implements GetRoleRepoInterface {
         },
       );
     });
+  }
+
+  async update(id: number, new_get_role: UpdateGetRoleType){
+    let valid = true
+
+    const {Id_roles, Id_Membre, Id_Evenement, isvalid} = new_get_role
+
+    const query = `UPDATE get_role SET Id_roles=${Id_roles}, Id_Membre=${Id_Membre}, Id_Evenement=${Id_Evenement} WHERE id=${id}`
+
+    try {
+      await new Promise<void>((resolve, reject) => {
+        connection.execute(query, (err: MysqlError | Error | null) => {
+          if(err) {
+            valid =  false
+            reject(err)
+          }
+          
+          resolve()
+        })
+      }) 
+    } catch (error) {
+      console.error(error)
+    }
+
+    return valid
+  }
+
+  async valid(id: number, isValid: number | null){
+    let valid = true
+
+    const query = `UPDATE get_role SET isvalid=${isValid} WHERE id=${id}`
+
+    try {
+      await new Promise<void>((resolve, reject) => {
+        connection.execute(query, (err: MysqlError | Error | null) => {
+          if(err) {
+            valid =  false
+            reject(err)
+          }
+          
+          resolve()
+        })
+      }) 
+    } catch (error) {
+      console.error(error)
+    }
+
+    return valid
+  }
+
+  async delete(id: number): Promise<boolean> {
+    let valid = true  
+
+    const query = `DELETE from get_role WHERE id=${id}`
+
+    try {
+      await new Promise<void>((resolve, reject) => {
+        connection.execute(query, (err: MysqlError | Error | null, res) => {
+          if(err){
+            valid = false
+            reject(err)
+          }
+
+          resolve()
+        }) 
+      }) 
+    } catch (error) {
+      console.log(error) 
+    }
+
+    return valid
+  }
+
+  async deleteFromMembre(id: number): Promise<boolean> {
+    let valid = true  
+
+    const query = `DELETE from get_role WHERE Id_Membre=${id}`
+
+    try {
+      await new Promise<void>((resolve, reject) => {
+        connection.execute(query, (err: MysqlError | Error | null, res) => {
+          if(err){
+            valid = false
+            reject(err)
+          }
+
+          resolve()
+        }) 
+      }) 
+    } catch (error) {
+      console.log(error) 
+    }
+
+    return valid
+  }
+
+  async deleteFromEvenement(id: number): Promise<boolean> {
+    let valid = true  
+
+    const query = `DELETE from get_role WHERE Id_Evenement=${id}`
+
+    try {
+      await new Promise<void>((resolve, reject) => {
+        connection.execute(query, (err: MysqlError | Error | null, res) => {
+          if(err){
+            valid = false
+            reject(err)
+          }
+
+          resolve()
+        }) 
+      }) 
+    } catch (error) {
+      console.log(error) 
+    }
+
+    return valid
   }
 }
