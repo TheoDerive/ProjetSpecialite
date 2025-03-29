@@ -53,8 +53,6 @@ export class MembreRepository implements MembreRepoInterface {
       connection.execute(query, (err, res: MembreGetRequest[]) => {
         if (err) reject(err);
 
-        console.log(res)
-
         const membres: Membre[] = [];
 
         if (Array.isArray(res)) {

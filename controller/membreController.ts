@@ -93,7 +93,6 @@ export async function updatePassword(req: Request, res: Response) {
     req.body.old_password,
     db_password[0].getPassword(),
   );
-  console.log(passwordValid);
 
   if (!passwordValid) {
     res.status(400);

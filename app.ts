@@ -9,10 +9,13 @@ import { EventTypeRepository } from "./db/repository/eventTypeRepository";
 import { typeEventRouter } from "./routes/typeEvent";
 import { EvenementRepository } from "./db/repository/evenementRepository";
 import { evenementRoute } from "./routes/evenements";
+import { GetRoleRepository } from "./db/repository/getRoleRepository";
+import { getRoleRoute } from "./routes/getRole";
 
 export const app = express();
 
 export const MembreRepo = new MembreRepository();
+export const GetRoleRepo = new GetRoleRepository();
 export const EvenementRepo = new EvenementRepository();
 export const CategoryRepo = new categoryRepository();
 export const RoleRepo = new RoleRepository();
@@ -35,3 +38,4 @@ app.use("/api/roles", roleRoute)
 app.use("/api/category", categoryRoute)
 app.use("/api/typesevents", typeEventRouter)
 app.use("/api/evenements", evenementRoute)
+app.use("/api/getRole", getRoleRoute)

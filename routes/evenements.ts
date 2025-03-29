@@ -3,6 +3,7 @@ import * as EvenementController from "../controller/evenementController";
 
 export const evenementRoute = Router()
 
-evenementRoute.get("/", EvenementController.getEvenemets)
-evenementRoute.post("/", EvenementController.addEvenement)
+evenementRoute.get("/", EvenementController.get)
+evenementRoute.post("/", EvenementController.add)
+evenementRoute.patch("/:id", EvenementController.update)
 
