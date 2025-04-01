@@ -51,7 +51,10 @@ export class MembreRepository implements MembreRepoInterface {
       const query = startQuery + endQuery
 
       connection.execute(query, (err, res: MembreGetRequest[]) => {
-        if (err) reject(err);
+        if (err) {
+          connection.end()
+          reject(err)
+        };
 
         const membres: Membre[] = [];
 
@@ -71,6 +74,7 @@ export class MembreRepository implements MembreRepoInterface {
             membres.push(new_membre);
           });
         } else {
+          connection.end()
           reject(new Error("La requete n'est pas sous format de tableau."));
         }
 
@@ -112,6 +116,7 @@ export class MembreRepository implements MembreRepoInterface {
         membre.token
       );
     } catch (err) {
+          connection.end()
       throw new Error(`Erreur lors de l'ajout du membre : ${err}`);
     }
   }
@@ -151,6 +156,24 @@ WHERE Id_Membre = ${id};
     return isValid
   }
 
+
+  async login(id: number, token: string){
+      let isValid = true
+
+      const query = `
+      UPDATE Membre
+SET token = '${token}'
+WHERE Id_Membre = ${id};
+    `;
+
+    console.log(query)
+
+    connection.execute(query, (err, res) => {
+      if(err) isValid = false
+    })
+
+    return isValid
+  }
 
   async logout(id: number){
       let isValid = true

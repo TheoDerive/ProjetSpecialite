@@ -4,6 +4,7 @@ import { EvenementType, UpdateEvenementType } from "../types/EvenementType";
 import { formatDateForSQL } from "../utils/formatDate";
 
 export async function get(req: Request, res: Response) {
+  console.log(req.body)
   const resultParams = req.body.resultParams;
   const filterParams = req.body.filterParams;
 
@@ -26,7 +27,7 @@ export async function add(req: Request, res: Response) {
   }: EvenementType = req.body;
 
   const dateAlreadyUsed = await EvenementRepo.getBy(
-    ["Name"],
+    ["Evenement.Name"],
     [{ name: "date", value: formatDateForSQL(date) }],
   );
 

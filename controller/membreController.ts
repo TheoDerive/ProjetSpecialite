@@ -19,6 +19,7 @@ export async function newMember(req: Request, res: Response) {
     req.body;
 
   const authToken = Membre.createToken(id);
+  console.log(authToken)
 
   const new_member: CreateMembreType = {
     id,
@@ -67,7 +68,7 @@ export async function login(req: Request, res: Response) {
   const { email, password } = req.body;
 
   const emailValid = await MembreRepo.getBy(
-    ["email", "password"],
+    ["Id_Membre", "email", "password"],
     [{ name: "email", value: email }],
   );
 
@@ -94,6 +95,9 @@ export async function login(req: Request, res: Response) {
         }),
       );
     } else {
+      const token = Membre.createToken(emailValid[0].id)
+      const valid = await MembreRepo.login(emailValid[0].id, token)
+      console.log(valid)
       res.status(200);
       res.send(JSON.stringify({ message: "connection ok" }));
     }
