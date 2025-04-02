@@ -54,17 +54,20 @@ class MembreRepository {
             }
             const query = startQuery + endQuery;
             init_1.connection.execute(query, (err, res) => {
-                if (err)
+                if (err) {
+                    init_1.connection.end();
                     reject(err);
-                console.log(res);
+                }
+                ;
                 const membres = [];
                 if (Array.isArray(res)) {
                     res.forEach((el) => {
-                        const new_membre = new Membre_1.Membre(el.Id_Membre, el.firstname, el.lastname, el.is_admin, el.email, el.image_url, el.password);
+                        const new_membre = new Membre_1.Membre(el.Id_Membre, el.firstname, el.lastname, el.is_admin, el.email, el.image_url, el.password, el.token);
                         membres.push(new_membre);
                     });
                 }
                 else {
+                    init_1.connection.end();
                     reject(new Error("La requete n'est pas sous format de tableau."));
                 }
                 resolve(membres);
@@ -78,21 +81,22 @@ class MembreRepository {
                 const hashedPassword = yield bcrypt_1.default.hash(membre.password, salt);
                 const query = `
       INSERT INTO Membre 
-      (Id_Membre, is_admin, firstname, lastname, email, password, image_url) 
+      (is_admin, firstname, lastname, email, password, image_url, token) 
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
                 init_1.connection.execute(query, [
-                    membre.id,
                     membre.is_admin,
                     membre.firstname,
                     membre.lastname,
                     membre.email.toLowerCase(),
                     hashedPassword,
                     membre.image_url,
+                    membre.token
                 ]);
-                return new Membre_1.Membre(membre.id, membre.firstname, membre.lastname, membre.is_admin, membre.email, membre.image_url, "");
+                return new Membre_1.Membre(membre.id, membre.firstname, membre.lastname, membre.is_admin, membre.email, membre.image_url, "", membre.token);
             }
             catch (err) {
+                init_1.connection.end();
                 throw new Error(`Erreur lors de l'ajout du membre : ${err}`);
             }
         });
@@ -127,6 +131,58 @@ WHERE Id_Membre = ${id};
                     isValid = false;
             });
             return isValid;
+        });
+    }
+    login(id, token) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let isValid = true;
+            const query = `
+      UPDATE Membre
+SET token = '${token}'
+WHERE Id_Membre = ${id};
+    `;
+            console.log(query);
+            init_1.connection.execute(query, (err, res) => {
+                if (err)
+                    isValid = false;
+            });
+            return isValid;
+        });
+    }
+    logout(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let isValid = true;
+            const query = `
+      UPDATE Membre
+SET token = null
+WHERE Id_Membre = ${id};
+    `;
+            init_1.connection.execute(query, (err, res) => {
+                if (err)
+                    isValid = false;
+            });
+            return isValid;
+        });
+    }
+    delete(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let valid = true;
+            const query = `DELETE from Membre WHERE Id_Membre=${id}`;
+            try {
+                yield new Promise((resolve, reject) => {
+                    init_1.connection.execute(query, (err, res) => {
+                        if (err) {
+                            valid = false;
+                            reject(err);
+                        }
+                        resolve();
+                    });
+                });
+            }
+            catch (error) {
+                console.log(error);
+            }
+            return valid;
         });
     }
 }

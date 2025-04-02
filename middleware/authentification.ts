@@ -8,6 +8,7 @@ export async function authentification(
   next: NextFunction,
 ) {
   try {
+    console.log(req.cookies)
     const authToken = req.header("Authorization")!.replace("Wazza ", "");
     const decodeToken = jwt.verify(authToken, "foo");
 

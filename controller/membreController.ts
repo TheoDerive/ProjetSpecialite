@@ -60,6 +60,11 @@ export async function newMember(req: Request, res: Response) {
     );
   } else {
     const membre = await MembreRepo.add(new_member);
+    res.cookie("token", authToken, {
+      httpOnly: true,
+      sameSite: "none",
+      secure: true,
+    })
     res.status(200);
     res.send(JSON.stringify(membre));
   }
@@ -96,6 +101,13 @@ export async function login(req: Request, res: Response) {
     } else {
       const token = Membre.createToken(emailValid[0].id)
       const valid = await MembreRepo.login(emailValid[0].id, token)
+
+      res.cookie("token", token, {
+        httpOnly: true,
+        // secure: false,
+        // sameSite: "lax",
+        // path: "/"
+      })
       
       const membre = await MembreRepo.getBy(["email", "firstname", "lastname", "Id_Membre", "is_admin", "image_url"], [{name: "Id_Membre", value: emailValid[0].id}])
 

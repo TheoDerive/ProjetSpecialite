@@ -14,8 +14,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Membre = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 class Membre {
-    constructor(id, firstname, lastname, is_admin, email, image_url, password) {
+    constructor(id, firstname, lastname, is_admin, email, image_url, password, token) {
         this.id = id,
             this.firstname = firstname,
             this.lastname = lastname,
@@ -23,12 +24,16 @@ class Membre {
             this.email = email,
             this.image_url = image_url;
         this.password = password;
+        this.token = token;
     }
     membreIsAdmin() {
         if (this.is_admin) {
             return true;
         }
         return false;
+    }
+    getPassword() {
+        return this.password;
     }
     static memberAlreadyExist(MembreRepo, params) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -44,8 +49,9 @@ class Membre {
             return yield bcrypt_1.default.compare(password, db_password);
         });
     }
-    getPassword() {
-        return this.password;
+    static createToken(id) {
+        const authToken = jsonwebtoken_1.default.sign({ id: id }, "foo");
+        return authToken;
     }
 }
 exports.Membre = Membre;

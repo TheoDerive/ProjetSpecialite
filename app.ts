@@ -1,4 +1,6 @@
 import express from "express";
+import cors from "cors";
+import cookieParser from "cookie-parser"
 import { MembreRepository } from "./db/repository/membresRepo";
 import { membreRoute } from "./routes/membres";
 import { RoleRepository } from "./db/repository/roleRepository";
@@ -13,6 +15,15 @@ import { GetRoleRepository } from "./db/repository/getRoleRepository";
 import { getRoleRoute } from "./routes/getRole";
 
 export const app = express();
+
+app.use(express.json());
+app.use(cookieParser());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  }),
+);
 
 export const MembreRepo = new MembreRepository();
 export const GetRoleRepo = new GetRoleRepository();
@@ -31,11 +42,10 @@ app.listen(PORT, (err) => {
   }
 });
 
-app.use(express.json())
 
-app.use("/api/membres", membreRoute)
-app.use("/api/roles", roleRoute)
-app.use("/api/category", categoryRoute)
-app.use("/api/typesevents", typeEventRouter)
-app.use("/api/evenements", evenementRoute)
-app.use("/api/getRole", getRoleRoute)
+app.use("/api/membres", membreRoute);
+app.use("/api/roles", roleRoute);
+app.use("/api/category", categoryRoute);
+app.use("/api/typesevents", typeEventRouter);
+app.use("/api/evenements", evenementRoute);
+app.use("/api/getRole", getRoleRoute);
