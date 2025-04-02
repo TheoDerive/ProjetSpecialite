@@ -6,8 +6,11 @@ import { getRoleType, UpdateGetRoleType } from "../types/getRolesType";
 export async function get(req: Request, res: Response) {
   const resultParams = req.body.resultParams;
   const filterParams = req.body.filterParams;
+  const needFetch = req.body.needFetch;
 
-  const get_roles = await GetRoleRepo.getBy(resultParams, filterParams);
+  console.log(needFetch)
+
+  const get_roles = await GetRoleRepo.getBy(resultParams, filterParams, needFetch);
 
   res.status(200);
   res.send(JSON.stringify(get_roles));

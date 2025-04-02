@@ -15,14 +15,15 @@ export async function getMembers(req: Request, res: Response) {
 }
 
 export async function newMember(req: Request, res: Response) {
-  const { id, email, firstname, lastname, password, is_admin, image_url } =
+  const { email, firstname, lastname, password, is_admin, image_url } =
     req.body;
 
-  const authToken = Membre.createToken(id);
-  console.log(authToken)
+  const membreLength = await MembreRepo.getBy([], [])
+
+  const authToken = Membre.createToken(membreLength.length + 1);
 
   const new_member: CreateMembreType = {
-    id,
+    id: membreLength.length + 1,
     email,
     firstname,
     lastname,
@@ -72,8 +73,6 @@ export async function login(req: Request, res: Response) {
     [{ name: "email", value: email }],
   );
 
-  console.log(emailValid);
-
   if (emailValid.length === 0) {
     res.status(400);
     res.send(
@@ -97,9 +96,11 @@ export async function login(req: Request, res: Response) {
     } else {
       const token = Membre.createToken(emailValid[0].id)
       const valid = await MembreRepo.login(emailValid[0].id, token)
-      console.log(valid)
+      
+      const membre = await MembreRepo.getBy(["email", "firstname", "lastname", "Id_Membre", "is_admin", "image_url"], [{name: "Id_Membre", value: emailValid[0].id}])
+
       res.status(200);
-      res.send(JSON.stringify({ message: "connection ok" }));
+      res.send(JSON.stringify({ message: "connection ok", value: membre }));
     }
   }
 }
@@ -139,6 +140,8 @@ export async function logout(req: Request, res: Response) {
 export async function updateMemberEmail(req: Request, res: Response) {
   const id = req.body.id;
   const newEmail = req.body.email;
+
+  console.log(req.body)
 
   const membreExist = await MembreRepo.getBy(
     [],

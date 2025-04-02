@@ -90,12 +90,11 @@ export class MembreRepository implements MembreRepoInterface {
 
       const query = `
       INSERT INTO Membre 
-      (Id_Membre, is_admin, firstname, lastname, email, password, image_url, token) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      (is_admin, firstname, lastname, email, password, image_url, token) 
+      VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
 
       connection.execute(query, [
-        membre.id,
         membre.is_admin,
         membre.firstname,
         membre.lastname,
