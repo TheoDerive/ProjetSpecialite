@@ -14,6 +14,13 @@ export async function getMembers(req: Request, res: Response) {
   res.send(JSON.stringify(membres));
 }
 
+export async function getMe(req: Request, res: Response) {
+  const membre = req.user
+
+  res.status(200);
+  res.send(JSON.stringify(membre));
+}
+
 export async function newMember(req: Request, res: Response) {
   const { email, firstname, lastname, password, is_admin, image_url } =
     req.body;
@@ -62,8 +69,6 @@ export async function newMember(req: Request, res: Response) {
     const membre = await MembreRepo.add(new_member);
     res.cookie("token", authToken, {
       httpOnly: true,
-      sameSite: "none",
-      secure: true,
     })
     res.status(200);
     res.send(JSON.stringify(membre));
@@ -104,9 +109,6 @@ export async function login(req: Request, res: Response) {
 
       res.cookie("token", token, {
         httpOnly: true,
-        // secure: false,
-        // sameSite: "lax",
-        // path: "/"
       })
       
       const membre = await MembreRepo.getBy(["email", "firstname", "lastname", "Id_Membre", "is_admin", "image_url"], [{name: "Id_Membre", value: emailValid[0].id}])
@@ -136,6 +138,8 @@ export async function logout(req: Request, res: Response) {
     const update = await MembreRepo.logout(id);
 
     if (update) {
+      res.clearCookie("token")
+      console.log('logout')
       res.status(200);
       res.send(JSON.stringify({ message: "Vous etes bien deconnecter" }));
     } else {

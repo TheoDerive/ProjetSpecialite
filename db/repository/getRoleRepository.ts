@@ -6,6 +6,7 @@ import { parseWhereConditions } from "../../utils/parseWhereConditions";
 import { connection } from "../init";
 import { GetRole } from "../../classes/GetRole";
 import { EvenementRepo, MembreRepo, RoleRepo } from "../../app";
+import { formatDateForSQL } from "../../utils/formatDate";
 
 export class GetRoleRepository implements GetRoleRepoInterface {
   async getBy(
@@ -29,6 +30,7 @@ export class GetRoleRepository implements GetRoleRepoInterface {
 
     let endQuery = " From get_role Where ";
 
+    console.log(params);
     if (params.length === 0) {
       endQuery += "1";
     } else {
@@ -121,11 +123,12 @@ export class GetRoleRepository implements GetRoleRepoInterface {
   add(getRole: getRoleType): Promise<GetRole> {
     return new Promise((resolve, reject) => {
       const { id, Id_Membre, Id_roles, Id_Evenement, date, isvalid } = getRole;
+      console.log(Id_Membre)
 
       const query = `
       INSERT INTO get_role 
-      (id, Id_Evenement, Id_roles, Id_Membre, date, isvalid) 
-      VALUES (${id}, ${Id_Evenement}, ${Id_roles}, ${Id_Membre}, '${date}', ${isvalid})
+      ( Id_Evenement, Id_roles, Id_Membre, date, isvalid) 
+      VALUES ( ${Id_Evenement}, ${Id_roles}, ${Id_Membre}, '${formatDateForSQL(date)}', ${isvalid})
     `;
 
       connection.execute(

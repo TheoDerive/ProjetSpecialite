@@ -3,9 +3,9 @@ import { Membre } from "./Membre"
 import { Role } from "./Role"
 
 export class GetRole {
-  private id: number
-  private Id_Membre: number
-  private Id_roles: number
+  public id: number
+  public Id_Membre: number
+  public Id_roles: number
   private Id_Evenement: number
   private is_valid: boolean | null
   private date: string

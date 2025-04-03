@@ -20,7 +20,6 @@ export async function add(req: Request, res: Response) {
     Id_Category,
     creation_date,
     desc_,
-    Id_Evenement,
     adresse,
     Name,
     date,
@@ -39,7 +38,7 @@ export async function add(req: Request, res: Response) {
   }
 
   const newEvenement: EvenementType = {
-    Id_Evenement,
+    Id_Evenement: 0,
     Name,
     date,
     desc_,

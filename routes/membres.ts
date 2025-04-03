@@ -5,6 +5,7 @@ import { authentification } from "../middleware/authentification";
 export const membreRoute = Router()
 
 membreRoute.post("/", authentification, MembreController.getMembers)
+membreRoute.get("/me", authentification, MembreController.getMe)
 membreRoute.post("/signin", MembreController.newMember)
 membreRoute.post("/login", MembreController.login)
 membreRoute.patch("/logout", authentification, MembreController.logout)

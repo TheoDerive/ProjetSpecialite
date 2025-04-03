@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken"
 export class Membre {
   public id: number
 
-  private firstname: string
+  public firstname: string
   private lastname: string
   private is_admin: number | null
   private email: string

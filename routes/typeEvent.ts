@@ -3,4 +3,4 @@ import * as TypeEventController from "../controller/eventTypeController";
 
 export const typeEventRouter = Router()
 
-typeEventRouter.get("/", TypeEventController.getEventTypes)
+typeEventRouter.post("/", TypeEventController.getEventTypes)

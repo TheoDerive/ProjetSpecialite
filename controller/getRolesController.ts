@@ -8,16 +8,17 @@ export async function get(req: Request, res: Response) {
   const filterParams = req.body.filterParams;
   const needFetch = req.body.needFetch;
 
-  console.log(needFetch)
-
   const get_roles = await GetRoleRepo.getBy(resultParams, filterParams, needFetch);
+  console.log(get_roles)
 
   res.status(200);
   res.send(JSON.stringify(get_roles));
 }
 
 export async function add(req: Request, res: Response) {
-  const new_get_role: getRoleType = req.body;
+  let new_get_role: getRoleType = req.body;
+
+  console.log(new_get_role.Id_Evenement)
 
   const get_role_exist = await GetRoleRepo.getBy(
     ["id"],
@@ -30,9 +31,15 @@ export async function add(req: Request, res: Response) {
         name: "Id_Evenement",
         value: new_get_role.Id_Evenement,
       },
+      {
+        name: "Id_roles",
+        value: new_get_role.Id_roles
+      }
     ],
     false,
   );
+
+  console.log(get_role_exist, "role")
 
   if (get_role_exist.length > 0) {
     res.status(400);
@@ -40,6 +47,7 @@ export async function add(req: Request, res: Response) {
       JSON.stringify({ err: "Ce membre a deja un role dans cette evenement" }),
     );
   } else {
+
     const add_get_role = await GetRoleRepo.add(new_get_role);
 
     res.status(200);
@@ -93,8 +101,8 @@ export async function updateValid(req: Request, res: Response) {
   const id = req.params.id;
 
   const get_role_isvalid = await GetRoleRepo.getBy(
-    ["isvalid"],
-    [{ name: "id", value: Number(id) } ], false
+    [],
+    [{ name: "id", value: Number(id) } ], true
   );
 
   console.log(get_role_isvalid)
@@ -118,6 +126,18 @@ export async function updateValid(req: Request, res: Response) {
         }),
       );
     } else {
+
+      const removeList = await GetRoleRepo.getBy(["id"], [{name: "Id_Membre", value: get_role_isvalid[0].Id_Membre}], false)
+
+
+      removeList.forEach(async (r) => {
+        if(r.id !== Number(id)) {
+
+        await GetRoleRepo.delete(Number(r.id))
+        } 
+
+      })
+
       res.status(200);
       res.send(JSON.stringify({ message: "Le role a bien ete modifier" }));
     }

@@ -96,7 +96,6 @@ export class EvenementRepository implements EvenementRepoInterface {
         date,
         Id_Category,
         Id_type_event,
-        Id_Evenement,
         creation_date,
         adresse,
         desc_,
@@ -105,15 +104,15 @@ export class EvenementRepository implements EvenementRepoInterface {
 
       const query = `
       INSERT INTO Evenement 
-      (Id_Evenement, Name, date, desc_, adresse, creation_date, Id_Category, Id_type_event) 
-      VALUES (${Id_Evenement}, '${Name}', '${formatDateForSQL(date)}', '${desc_}', '${adresse}', '${formatDateForSQL(creation_date)}', ${Id_Category}, ${Id_type_event})
+      (Name, date, desc_, adresse, creation_date, Id_Category, Id_type_event) 
+      VALUES ('${Name}', '${formatDateForSQL(date)}', '${desc_}', '${adresse}', '${formatDateForSQL(creation_date)}', ${Id_Category}, ${Id_type_event})
     `;
 
       connection.execute(query, (err, res) => {
         if (err) reject(err);
 
         const new_evenement = new Evenement(
-          Id_Evenement,
+          0,
           Name,
           date,
           desc_,

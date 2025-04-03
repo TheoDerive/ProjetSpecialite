@@ -95,7 +95,7 @@ export class MembreRepository implements MembreRepoInterface {
     `;
 
       connection.execute(query, [
-        membre.is_admin,
+        null,
         membre.firstname,
         membre.lastname,
         membre.email.toLowerCase(),
